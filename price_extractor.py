@@ -5,16 +5,17 @@ from selenium.webdriver.common.by import By
 import time
 import pandas as pd
 from tqdm import tqdm
+from selenium.webdriver.chrome.service import Service
 
 
 def browser_startup_sequence():
     # start browser
     base_url = "https://www.google.com/maps/"
-    path = r'Google_Maps_Scraper/chromedriver'
+    service = Service(executable_path=r'Google_Maps_Scraper/chromedriver')
     options = webdriver.ChromeOptions()
     options.add_experimental_option('prefs', {'intl.accept_languages': 'en,en_US'})
     options.add_argument("--lang=en_US")
-    driver = webdriver.Chrome(path, chrome_options=options)
+    driver = webdriver.Chrome(service=service, options=options)
     driver.maximize_window()
     driver.set_page_load_timeout(30)
     return driver
@@ -60,7 +61,7 @@ INPUT_DESTINATION = "London"
 
 driver = scraper_startup(INPUT_URL)
 listings_name_lst, listings_url_lst = ([] for i in range(2))
-for i in range(15):
+for i in range(2):
     # Scroll to bottom of page
     time.sleep(5)
     scroll_to_bottom_of_page(driver)
@@ -90,6 +91,7 @@ i = 0
 ratings_lst, ratings_count_lst, price_lst, description_lst = ([] for i in range(4))
 driver = scraper_startup(INPUT_URL)
 for url in tqdm(listings_url_lst):
+    print(url)
     try:
         name = listings_name_lst[i]
         driver.get(url)
@@ -104,7 +106,7 @@ for url in tqdm(listings_url_lst):
             rating = None
             rating_count = None
         try:
-            price = soup.find("div", {"class": "_1emnh212"}).find("span", {"class": "_1k4xcdh"}).text.replace("\xa0€","").replace(".","")
+            price = soup.find("div", {"class": "_1qh0b5n"}).find("span", {"class": "_1qs94rc"}).text.replace("\xa0€","").replace(".","")
         except:
             price = None
         description = soup.find("div", {"data-section-id": "DESCRIPTION_DEFAULT"}).text
